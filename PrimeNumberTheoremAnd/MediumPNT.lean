@@ -85,6 +85,29 @@ noncomputable def SmoothedChebyshev (SmoothingF : ℝ → ℝ) (ε : ℝ) (X : �
 open ComplexConjugate
 
 
+lemma smoothedChebyshevIntegrand_conj
+    {SmoothingF : ℝ → ℝ} {ε X : ℝ} (Xpos : 0 < X) (s : ℂ) :
+    SmoothedChebyshevIntegrand SmoothingF ε X (conj s) =
+      conj (SmoothedChebyshevIntegrand SmoothingF ε X s) := by
+  unfold SmoothedChebyshevIntegrand
+  simp only [map_mul, map_div₀, map_neg]
+  congr
+  · exact deriv_riemannZeta_conj s
+  · exact riemannZeta_conj s
+  · unfold mellin
+    rw[← integral_conj]
+    apply MeasureTheory.setIntegral_congr_fun measurableSet_Ioi
+    intro x xpos
+    simp only [smul_eq_mul, map_mul, Complex.conj_ofReal]
+    congr
+    nth_rw 1 [← map_one conj]
+    rw[← map_sub, Complex.cpow_conj, Complex.conj_ofReal]
+    rw[Complex.arg_ofReal_of_nonneg xpos.le]
+    exact Real.pi_ne_zero.symm
+  · rw[Complex.cpow_conj, Complex.conj_ofReal]
+    rw[Complex.arg_ofReal_of_nonneg Xpos.le]
+    exact Real.pi_ne_zero.symm
+
 open MeasureTheory
 
 @[blueprint
